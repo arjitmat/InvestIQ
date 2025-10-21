@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ResearchIQ - Investment Analysis Report">
+    <title>Analysis Report - ResearchIQ</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css?v=3.0">
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden">
+            <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+        </svg>
+        <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+        </svg>
+    </button>
+
+    <div class="container py-8 fade-in">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold mb-2" id="assetName">Loading...</h1>
+                <div class="flex items-center gap-4">
+                    <p class="text-2xl font-semibold" id="currentPrice">$0.00</p>
+                    <p class="text-lg" id="priceChange">+0.00%</p>
+                </div>
+                <p class="text-sm text-muted mt-1" id="timestamp">Last updated: -</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="window.location.href='index.html'" class="btn btn-secondary hover-lift">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
+                    </svg>
+                    New Analysis
+                </button>
+                <button onclick="downloadPDF()" class="btn btn-primary hover-lift">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+                    </svg>
+                    Download PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Analysis Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Technical Analysis Card -->
+            <div class="card card-hover slide-in-left">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">Technical Analysis</h2>
+                    <span class="badge badge-high">HIGH Confidence</span>
+                </div>
+
+                <!-- RSI -->
+                <div class="mb-6">
+                    <h3 class="font-medium mb-3 text-center">RSI (14-day)</h3>
+                    <div id="rsiGauge"></div>
+                </div>
+
+                <!-- Moving Averages -->
+                <div class="mb-6">
+                    <h3 class="font-medium mb-3">Moving Averages</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-sm">20-day MA</span>
+                            <span class="text-sm font-medium" id="ma20">$0.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">50-day MA</span>
+                            <span class="text-sm font-medium" id="ma50">$0.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">200-day MA</span>
+                            <span class="text-sm font-medium" id="ma200">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Volume -->
+                <div class="mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium">Volume</span>
+                        <span class="text-sm text-muted" id="volumeStatus">-</span>
+                    </div>
+                </div>
+
+                <!-- Overall Signal -->
+                <div class="p-3 rounded-lg mb-4" style="background-color: var(--secondary);">
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium">Overall Signal</span>
+                        <span class="font-bold" id="technicalSignal">-</span>
+                    </div>
+                </div>
+
+                <!-- AI Technical Insight -->
+                <div id="aiTechnicalInsight" class="hidden p-3 rounded-lg" style="background-color: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3);">
+                    <div class="flex items-start gap-2">
+                        <span class="badge badge-ai text-xs">AI</span>
+                        <p class="text-sm" id="aiTechnicalText"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sentiment Analysis Card -->
+            <div class="card card-hover slide-in-right">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">Sentiment Analysis</h2>
+                    <span class="badge badge-medium">MEDIUM Confidence</span>
+                </div>
+
+                <!-- Fear & Greed Index -->
+                <div class="mb-6">
+                    <h3 class="font-medium mb-3 text-center">Market Sentiment</h3>
+                    <div id="fearGreedGauge"></div>
+                </div>
+
+                <!-- Google Trends -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium">Search Interest</span>
+                        <span class="text-sm text-muted" id="trendsLevel">-</span>
+                    </div>
+                </div>
+
+                <!-- Reddit Mentions -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium">Reddit Mentions</span>
+                        <span class="text-sm font-medium" id="redditMentions">0</span>
+                    </div>
+                    <p class="text-sm text-muted" id="redditBaseline">-</p>
+                </div>
+
+                <!-- Overall Sentiment -->
+                <div class="p-3 rounded-lg" style="background-color: var(--secondary);">
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium">Overall Sentiment</span>
+                        <span class="font-bold" id="overallSentiment">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- News Context Card (Full Width) -->
+        <div class="card card-hover mb-6 slide-in-left" style="animation-delay: 0.2s;">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">News Context</h2>
+                <span class="badge badge-context">CONTEXT ONLY</span>
+            </div>
+
+            <!-- AI News Sentiment -->
+            <div id="aiNewsSentiment" class="hidden mb-4 p-3 rounded-lg" style="background-color: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3);">
+                <div class="flex items-start gap-2 mb-2">
+                    <span class="badge badge-ai text-xs">AI</span>
+                    <div>
+                        <div class="flex gap-2 mb-1">
+                            <span class="text-sm font-medium">Sentiment:</span>
+                            <span class="text-sm" id="aiNewsSentimentValue">-</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="text-sm font-medium">Themes:</span>
+                            <span class="text-sm" id="aiNewsThemes">-</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-sm text-muted" id="aiNewsEvent"></p>
+            </div>
+
+            <!-- Headlines -->
+            <div id="newsHeadlines" class="space-y-3">
+                <p class="text-sm text-muted">Loading news...</p>
+            </div>
+        </div>
+
+        <!-- AI Cross-Signal Analysis (Full Width) -->
+        <div id="aiCrossSignal" class="hidden card ai-card mb-6 slide-in-right" style="animation-delay: 0.3s;">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">AI Cross-Signal Analysis</h2>
+                <span class="badge badge-ai">AI-POWERED</span>
+            </div>
+            <div id="aiCrossSignalInsights" class="space-y-2"></div>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="card card-hover mb-6 slide-in-left" style="animation-delay: 0.4s;">
+            <h2 class="text-xl font-semibold mb-4">Summary</h2>
+            <p class="text-muted mb-4" id="summaryText">Loading summary...</p>
+            <div class="flex flex-wrap gap-2">
+                <span class="text-xs px-2 py-1 rounded" style="background-color: var(--secondary);">yfinance</span>
+                <span class="text-xs px-2 py-1 rounded" style="background-color: var(--secondary);">NewsAPI</span>
+                <span class="text-xs px-2 py-1 rounded" style="background-color: var(--secondary);">Reddit</span>
+                <span class="text-xs px-2 py-1 rounded" style="background-color: var(--secondary);">Google Trends</span>
+                <span class="text-xs px-2 py-1 rounded" style="background-color: var(--secondary);">Fear & Greed</span>
+                <span class="text-xs px-2 py-1 rounded" style="background-color: rgba(139, 92, 246, 0.2); color: var(--accent);">Gemini AI</span>
+            </div>
+        </div>
+
+        <!-- Disclaimer Footer -->
+        <div class="card" style="background-color: rgba(212, 24, 61, 0.05); border-color: rgba(212, 24, 61, 0.2);">
+            <h3 class="font-semibold mb-3" style="color: var(--destructive);">⚠️ Important Disclaimer</h3>
+            <div class="space-y-2 text-sm text-muted">
+                <p><strong>Educational Purpose Only:</strong> ResearchIQ is an educational research tool built as a portfolio project. This is NOT financial advice, investment recommendations, or a professional analysis service.</p>
+                <p><strong>Data Limitations:</strong> This tool uses free public APIs with known constraints. Technical analysis is HIGH confidence (real market data), while sentiment signals are MEDIUM to LOW confidence (directional only).</p>
+                <p><strong>AI-Generated Insights:</strong> AI analysis identifies patterns but cannot predict future performance. Educational context only.</p>
+                <p><strong>Not Suitable for Investment Decisions:</strong> The analysis provided is for research and educational purposes only.</p>
+                <p><strong>Consult Professionals:</strong> For investment decisions, consult licensed financial professionals. Past performance does not guarantee future results.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/circular-gauge.js?v=3.0"></script>
+    <script src="js/report.js?v=3.0"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Test - ResearchIQ</title>
+    <link rel="stylesheet" href="css/styles.css?v=2.0">
+</head>
+<body>
+    <div class="container py-8">
+        <h1>CSS Feature Test</h1>
+
+        <h2>1. Gradient Text</h2>
+        <p class="text-4xl font-bold">
+            <span class="gradient-text">This should be gradient (cyan to purple)</span>
+        </p>
+
+        <h2 class="mt-8">2. Tab Styles</h2>
+        <div class="flex gap-2">
+            <button class="tab active">Active Tab</button>
+            <button class="tab">Inactive Tab</button>
+            <button class="tab">Hover Me</button>
+        </div>
+
+        <h2 class="mt-8">3. Card Hover Effect</h2>
+        <div class="card card-hover" style="max-width: 400px;">
+            <h3>Hover this card</h3>
+            <p class="text-muted">Should lift up and show shadow</p>
+        </div>
+
+        <h2 class="mt-8">4. AI Card Effect</h2>
+        <div class="card ai-card" style="max-width: 400px;">
+            <h3>AI Card with Shimmer</h3>
+            <p class="text-muted">Hover to see shimmer effect</p>
+        </div>
+
+        <h2 class="mt-8">5. Animations</h2>
+        <div class="card fade-in" style="max-width: 400px;">
+            <p>This should fade in</p>
+        </div>
+
+        <h2 class="mt-8">6. Gradient Background</h2>
+        <div class="hero-gradient p-8 rounded-2xl">
+            <h3 class="text-center">Animated Gradient Background</h3>
+            <p class="text-center text-muted">Should have subtle animated gradient</p>
+        </div>
+    </div>
+</body>
+</html>
