@@ -94,9 +94,10 @@ AI_TIMEOUT_SECONDS = 10  # Timeout for AI API calls
 # CORS Settings (update with your frontend URL in production)
 CORS_ORIGINS = [
     "http://localhost:3000",
+    "http://localhost:5173",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
-    "file://*",  # For local HTML files
+    "https://invest-iq-wheat.vercel.app",  # Vercel frontend
     "*"  # Allow all for development (restrict in production)
 ]
 
