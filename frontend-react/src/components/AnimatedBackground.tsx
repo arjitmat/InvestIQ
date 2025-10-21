@@ -83,7 +83,7 @@ export function AnimatedBackground({ isDark }: AnimatedBackgroundProps) {
             r={3 * particle.scale}
             fill="url(#particleGradient)"
             filter="url(#glow)"
-            style={{
+            initial={{
               cx: `${particle.startX}%`,
               cy: `${particle.startY}%`,
             }}
