@@ -31,6 +31,6 @@ services:
     startCommand: npx vite preview --host 0.0.0.0 --port $PORT
     envVars:
       - key: NODE_VERSION
-        value: 18.0.0
+        value: 20.18.0
       - key: VITE_API_URL
         value: https://investiq-backend.onrender.com
