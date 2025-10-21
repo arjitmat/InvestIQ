@@ -21,9 +21,6 @@ export function FearGreedGauge({ value }: { value: number }) {
   const centerX = 140;
   const centerY = 140;
 
-  // Calculate arc path
-  const circumference = Math.PI * radius; // Semi-circle circumference
-
   // Segments: [start%, end%] for each zone
   const segments = [
     { start: 0, end: 25, color: "#ef4444" }, // Extreme Fear
