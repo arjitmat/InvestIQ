@@ -1,8 +1,8 @@
 """
 Vercel serverless function handler for FastAPI
 """
-# Import the FastAPI app directly (all files are in api/ directory)
+from mangum import Mangum
 from main import app
 
-# Export for Vercel
-handler = app
+# Wrap FastAPI app with Mangum for serverless deployment
+handler = Mangum(app)
