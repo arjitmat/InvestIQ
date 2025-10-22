@@ -2,6 +2,14 @@
 
 > An educational investment research tool that aggregates real-time market data, technical analysis, sentiment indicators, and AI-powered insights into comprehensive reports.
 
+## 🌐 Live Demo
+
+**Frontend:** https://invest-iq-wheat.vercel.app
+**Backend API:** https://investiq-backend.onrender.com
+**GitHub:** https://github.com/arjitmat/InvestIQ
+
+> **Note:** Backend is hosted on Render's free tier, which has a 15-minute inactivity sleep. First request after inactivity may take 30-45 seconds to wake up.
+
 ## ⚠️ Important Disclaimer
 
 **This is an EDUCATIONAL tool only. NOT financial advice.**
@@ -24,20 +32,24 @@
 ## 🛠️ Tech Stack
 
 ### Frontend
-- React 18 + TypeScript
-- Vite
-- Tailwind CSS v4
-- Framer Motion (animations)
-- React Router
+- **Framework:** React 18 + TypeScript
+- **Build Tool:** Vite 7
+- **Styling:** Tailwind CSS v4, shadcn/ui components
+- **Animations:** Framer Motion
+- **Charts:** Recharts
+- **Deployment:** Vercel (serverless edge)
 
 ### Backend
-- Python 3.13
-- FastAPI
-- yfinance (market data)
-- NewsAPI (headlines)
-- Reddit API (social sentiment)
-- Google Trends (search interest)
-- Google Gemini AI (insights)
+- **Framework:** Python 3.11, FastAPI, Uvicorn
+- **Data Sources:** yfinance, NewsAPI, Reddit API, Google Trends
+- **AI:** Google Gemini 2.0 Flash
+- **Caching:** In-memory with TTL
+- **Deployment:** Render (free tier)
+
+### Infrastructure
+- **CI/CD:** GitHub Actions (auto-deploy on push)
+- **CORS:** Configured for cross-origin requests
+- **Environment:** Separate configs for dev/production
 
 ## 📦 Installation
 
@@ -50,7 +62,7 @@
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/InvestIQ.git
+git clone https://github.com/arjitmat/InvestIQ.git
 cd InvestIQ
 ```
 
@@ -151,13 +163,68 @@ Frontend will run on http://localhost:5173
 
 ## 🚀 Deployment
 
-This app can be deployed to Railway, Vercel, or similar platforms.
+### Current Production Setup
 
-### Railway Deployment
-1. Push code to GitHub
-2. Connect Railway to your GitHub repo
-3. Add environment variables in Railway dashboard
-4. Railway will auto-deploy on push
+**Frontend (Vercel):**
+- Auto-deploys from `main` branch
+- Environment variables configured in Vercel dashboard
+- Instant cold starts, global CDN distribution
+- Free tier, serverless edge deployment
+
+**Backend (Render):**
+- Deployed via `render.yaml` (infrastructure as code)
+- Auto-deploys from `main` branch
+- Environment variables configured in Render dashboard
+- Free tier with 15-minute cold start after inactivity
+
+### Deployment Instructions
+
+**1. Fork/Clone Repository**
+```bash
+git clone https://github.com/arjitmat/InvestIQ.git
+cd InvestIQ
+```
+
+**2. Deploy Frontend to Vercel**
+- Go to https://vercel.com/new
+- Import your GitHub repository
+- Set Root Directory: `frontend-react`
+- Add environment variable:
+  - `VITE_API_URL`: Your backend URL (e.g., `https://your-backend.onrender.com`)
+- Click Deploy
+
+**3. Deploy Backend to Render**
+- Go to https://render.com/
+- Create new Blueprint instance
+- Connect your GitHub repository
+- Render will detect `render.yaml` and configure automatically
+- Add environment variables in Render dashboard:
+  - `NEWSAPI_KEY`
+  - `REDDIT_CLIENT_ID`
+  - `REDDIT_CLIENT_SECRET`
+  - `GEMINI_API_KEY`
+- Click Deploy
+
+**4. Update Frontend Environment Variable**
+- In Vercel dashboard, update `VITE_API_URL` to point to your Render backend URL
+- Redeploy frontend
+
+### Alternative Deployment Options
+
+**Vercel (Full Stack - Not Recommended)**
+- Frontend works perfectly
+- Backend hits 50MB serverless function limit due to pandas/numpy dependencies
+- Better to use Render or similar for Python backend
+
+**Railway**
+- Good alternative to Render
+- $5 free credit per month
+- No forced sleep after inactivity
+- Follow similar process as Render
+
+**Docker**
+- Dockerfile and docker-compose.yml can be added for containerized deployment
+- Suitable for AWS, GCP, Azure deployments
 
 ## 📄 License
 
