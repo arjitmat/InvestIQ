@@ -66,7 +66,7 @@ class AnalyzeResponse(BaseModel):
 
 # Routes
 
-@app.get("/")
+@app.get("/api")
 async def root():
     """Root endpoint - API info"""
     return {
@@ -75,13 +75,13 @@ async def root():
         "description": "Investment Research Intelligence API",
         "disclaimer": "Educational tool only. Not financial advice.",
         "endpoints": {
-            "/analyze": "POST - Analyze a ticker symbol",
-            "/health": "GET - Health check",
-            "/docs": "GET - API documentation"
+            "/api/analyze": "POST - Analyze a ticker symbol",
+            "/api/health": "GET - Health check",
+            "/api/docs": "GET - API documentation"
         }
     }
 
-@app.get("/health")
+@app.get("/api/health")
 async def health_check():
     """Health check endpoint"""
     return {
@@ -90,7 +90,7 @@ async def health_check():
         "version": APP_VERSION
     }
 
-@app.post("/analyze", response_model=AnalyzeResponse)
+@app.post("/api/analyze", response_model=AnalyzeResponse)
 async def analyze_asset(request: AnalyzeRequest):
     """
     Analyze an asset - main endpoint
@@ -225,7 +225,7 @@ async def analyze_asset(request: AnalyzeRequest):
             detail=f"Internal error analyzing {ticker}: {str(e)}"
         )
 
-@app.get("/assets")
+@app.get("/api/assets")
 async def get_supported_assets():
     """
     Get list of supported assets
@@ -243,7 +243,7 @@ async def get_supported_assets():
         "total": len(STOCKS) + len(CRYPTO) + len(INDICES) + len(COMMODITIES)
     }
 
-@app.get("/disclaimer")
+@app.get("/api/disclaimer")
 async def get_disclaimer():
     """Get full disclaimer text"""
     return {
@@ -296,10 +296,20 @@ if frontend_path.exists():
     # Mount static assets (JS, CSS, images)
     app.mount("/assets", StaticFiles(directory=str(frontend_path / "assets")), name="assets")
 
+    # Serve index.html at root
+    @app.get("/")
+    async def serve_root():
+        """Serve React frontend at root"""
+        return FileResponse(frontend_path / "index.html")
+
     # Catch-all route to serve index.html for React Router
     @app.get("/{full_path:path}")
     async def serve_frontend(full_path: str):
         """Serve React frontend for all non-API routes"""
+        # Skip API routes
+        if full_path.startswith("api/"):
+            raise HTTPException(status_code=404, detail="API endpoint not found")
+
         # If requesting a file with extension, try to serve it
         if "." in full_path.split("/")[-1]:
             file_path = frontend_path / full_path
