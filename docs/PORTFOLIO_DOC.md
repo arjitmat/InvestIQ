@@ -6,10 +6,10 @@
 
 ## Live Application
 
-- **Frontend:** https://invest-iq-wheat.vercel.app
-- **Backend API:** https://investiq-backend.onrender.com
+- **Production:** https://huggingface.co/spaces/arjitmat/investiq
 - **GitHub:** https://github.com/arjitmat/InvestIQ
-- **Tech Stack:** React 18 + TypeScript, Python 3.11, FastAPI, Google Gemini AI
+- **Tech Stack:** React 18 + TypeScript, Python 3.11, FastAPI, Google Gemini AI, Docker
+- **Status:** Production Ready with Advanced Market Data Features
 
 ## Project Highlights for Recruiters
 
@@ -18,8 +18,9 @@
 - Modern React 18 + TypeScript frontend with shadcn/ui components
 - FastAPI backend with async Python for optimal performance
 - RESTful API design with comprehensive error handling
-- Real-time data aggregation from 5 different sources
-- AI integration with Google Gemini for enhanced insights
+- Real-time data aggregation from 9 different sources
+- AI integration with Google Gemini 2.0 Flash for 7 enhanced insights
+- Docker multi-stage builds for production deployment
 
 **Why It Matters:**
 - Demonstrates proficiency across the entire stack
@@ -29,10 +30,14 @@
 ### 2. AI Integration (Not Just API Calls)
 **What I Built:**
 - Integrated Google Gemini 2.0 Flash for AI-powered analysis
-- Three specialized AI functions:
-  1. **Technical Pattern Recognition:** AI spots divergences and anomalies
-  2. **News Sentiment Analysis:** Extracts sentiment and themes from headlines
-  3. **Cross-Signal Analysis:** Identifies contradictions across data sources (key value-add)
+- **Seven specialized AI functions** (expanded from 3):
+  1. **Price Momentum Analysis:** AI analyzes momentum strength and exhaustion signals
+  2. **Support/Resistance Levels:** AI identifies key price levels from historical data
+  3. **Volume Anomaly Detection:** AI detects unusual volume patterns and divergences
+  4. **Technical Pattern Recognition:** AI spots chart patterns and technical divergences
+  5. **News Sentiment Analysis:** Extracts sentiment, themes, and key events from headlines
+  6. **Cross-Signal Analysis:** Identifies contradictions across 9 data sources (key value-add)
+  7. **Risk Assessment:** AI combines volatility, options data, and market conditions for risk evaluation
 - Smart caching system (1-hour TTL) to optimize performance and reduce API costs
 - Graceful degradation when AI unavailable
 - Educational framing to avoid giving investment advice
@@ -45,55 +50,81 @@
 
 ### 3. Production Deployment & DevOps
 **What I Built:**
-- **Split deployment architecture:**
-  - Frontend: Vercel (React, serverless, instant cold starts)
-  - Backend: Render (Python, free tier with infrastructure as code)
-- **Infrastructure as Code:** render.yaml for reproducible deployments
-- **CI/CD:** Auto-deploy from GitHub on push
+- **Docker containerization:**
+  - Multi-stage build (Node.js for React build → Python runtime)
+  - Optimized for HuggingFace Spaces deployment
+  - Environment variable management at build time
+- **Infrastructure as Code:** Dockerfile and .dockerignore for reproducible deployments
+- **CI/CD:** Auto-deploy from GitHub on push to HuggingFace
 - **CORS configuration:** Proper security for cross-origin requests
 - **Environment management:** Separate dev/prod configurations
+- **Previous deployment attempts:**
+  - Vercel + Render split architecture (deprecated)
+  - Learned serverless limitations with Python dependencies
 
 **Deployment Challenges Overcome:**
 1. **Attempted Vercel serverless backend:** Hit 50MB function limit due to pandas/numpy
-2. **Solution:** Chose right platform for each service (Vercel for React, Render for Python)
-3. **Learning:** Serverless great for Node.js/simple functions, not complex Python apps
+2. **Attempted split deployment:** Vercel frontend + Render backend had CORS complexities
+3. **Solution:** Unified Docker deployment on HuggingFace Spaces - single domain, no CORS issues
+4. **Learning:** Docker simplifies deployment when you have both frontend and backend
 
 **Why It Matters:**
 - Shows real-world deployment experience beyond "it works on localhost"
 - Demonstrates understanding of platform trade-offs and constraints
 - Proves ability to debug production issues and make architectural decisions
-- Cost-conscious: $0 hosting while maintaining full functionality
+- Docker containerization is industry standard for modern deployments
 
 ### 4. Data Engineering & API Integration
 **What I Built:**
-- **5 data sources integrated:**
+- **9 data sources integrated:**
   1. yfinance (price/volume data)
   2. NewsAPI (headlines)
   3. Reddit API (mention volume)
   4. Google Trends (search interest)
   5. Fear & Greed Index (market sentiment)
+  6. **NEW**: Options sentiment (Put/Call ratio from yfinance)
+  7. **NEW**: Insider trading activity (executive buys/sells from yfinance)
+  8. **NEW**: Institutional ownership (top holders from yfinance)
+  9. **NEW**: Risk metrics (volatility, beta, 52-week ranges from yfinance)
 - **Parallel data fetching:** asyncio.gather for 3x speed improvement
 - **Error resilience:** Individual source failures don't crash analysis
 - **Confidence levels:** Honest about data quality (HIGH/MEDIUM/LOW/CONTEXT)
+- **Smart data extraction:** No new API keys needed - expanded yfinance usage
 
 **Why It Matters:**
 - Shows ability to work with real-world, imperfect data
 - Demonstrates async programming for performance optimization
 - Proves understanding of API limitations and rate limits
 - Transparent about data quality (critical for trust)
+- Creative use of existing APIs to extract advanced features
 
-### 5. Technical Analysis Implementation
+### 5. Technical & Quantitative Analysis Implementation
 **What I Built:**
-- RSI (Relative Strength Index) calculation from scratch
-- Moving averages (20/50/200-day)
-- Volume analysis and anomaly detection
-- Momentum signal aggregation
-- Sentiment scoring with weighted indicators
+- **Technical Indicators:**
+  - RSI (Relative Strength Index) calculation from scratch
+  - Moving averages (20/50/200-day)
+  - Volume analysis and anomaly detection
+  - Momentum signal aggregation
+- **Risk Analytics:**
+  - Annualized volatility calculation (30-day and 90-day)
+  - Beta coefficient for market correlation
+  - 52-week high/low tracking with distance metrics
+  - Risk scoring algorithm (0-100 scale)
+- **Options Market Analysis:**
+  - Put/Call ratio calculation and interpretation
+  - Options volume aggregation
+  - Sentiment classification (bullish/neutral/bearish)
+- **Institutional & Insider Analysis:**
+  - Top holder identification and ownership concentration
+  - Insider transaction sentiment scoring
+  - Buy/sell ratio analysis with value calculations
 
 **Why It Matters:**
-- Shows ability to implement financial algorithms
-- Not just using libraries - understanding the math
-- Demonstrates domain knowledge in quantitative analysis
+- Shows ability to implement financial algorithms from first principles
+- Not just using libraries - understanding the math and finance theory
+- Demonstrates domain knowledge in quantitative finance
+- Proves understanding of options markets and institutional behavior
+- Risk assessment methodology mirrors professional-grade analysis
 
 ## Technical Skills Demonstrated
 
@@ -299,27 +330,33 @@
 
 ### "What's your approach to API integration?"
 **Answer:**
-> "InvestIQ integrates 5 different APIs with varying reliability. I used async/await with asyncio.gather to fetch data in parallel, improving speed by 3x. Each source has explicit confidence levels (HIGH/MEDIUM/LOW) so users know data quality. When sources fail, the system degrades gracefully - if Google Trends returns 429 errors, the analysis continues with other sources. I also implemented rate limit handling and retry logic. This shows I understand real-world API challenges and design for resilience."
+> "InvestIQ integrates 9 different data sources with varying reliability. I used async/await with asyncio.gather to fetch data in parallel, improving speed by 3x. Each source has explicit confidence levels (HIGH/MEDIUM/LOW) so users know data quality. When sources fail, the system degrades gracefully - if Google Trends returns 429 errors, the analysis continues with other sources. I also implemented rate limit handling and retry logic. Recently, I expanded from 5 to 9 sources without adding new API keys by creatively extracting options, insider trading, institutional, and risk data from the existing yfinance API. This shows I understand real-world API challenges and design for resilience."
+
+### "How did you enhance the product after initial launch?"
+**Answer:**
+> "After deploying the initial version with 5 data sources and 3 AI insights, I identified gaps compared to professional financial tools. I enhanced InvestIQ by adding 4 advanced data sources (options sentiment, insider trading, institutional ownership, risk metrics) - all extracted from the existing yfinance API with zero additional cost. I expanded AI insights from 3 to 7, adding price momentum analysis, support/resistance level identification, volume anomaly detection, and risk assessment. This required updating the backend data pipeline, AI prompt engineering, report generation logic, and frontend UI components. The enhancement was deployed to production on HuggingFace Spaces using Docker, showing I can iterate on products based on market needs while maintaining zero incremental costs."
 
 ## Conclusion
 
 InvestIQ demonstrates:
-- ✅ Full-stack development (React + Python)
-- ✅ Modern AI integration with Gemini
-- ✅ Production deployment experience
-- ✅ API integration at scale (5 sources)
-- ✅ Performance optimization (async, caching)
-- ✅ Cost-conscious engineering ($0 hosting)
-- ✅ Real-world problem-solving (deployment challenges)
-- ✅ Professional documentation
-- ✅ Security awareness (CORS, env variables)
-- ✅ User-first design (graceful degradation, transparency)
+- ✅ Full-stack development (React + TypeScript + Python + Docker)
+- ✅ Modern AI integration with Gemini (7 specialized insights)
+- ✅ Production deployment experience (Docker + HuggingFace Spaces)
+- ✅ API integration at scale (9 sources, creative extraction)
+- ✅ Advanced quantitative finance (options, risk, institutional analysis)
+- ✅ Performance optimization (async, caching, parallel processing)
+- ✅ Cost-conscious engineering ($0 hosting and incremental costs)
+- ✅ Real-world problem-solving (deployment challenges, iteration)
+- ✅ Professional documentation (comprehensive, portfolio-ready)
+- ✅ Security awareness (CORS, env variables, API key management)
+- ✅ User-first design (graceful degradation, transparency, confidence levels)
+- ✅ Product iteration (v1 → v2 enhancement with advanced features)
 
-**Total Development Time:** ~15-20 hours across 3 sessions
-**Status:** Production-ready, deployed, fully functional
+**Total Development Time:** ~25-30 hours across 4 sessions
+**Status:** Production-ready, deployed, fully functional with advanced features
 
 ---
 
 **Contact:** Arjit - AI/ML Consultant & Full-Stack Developer
-**Live Demo:** https://invest-iq-wheat.vercel.app
+**Live Demo:** https://huggingface.co/spaces/arjitmat/investiq
 **GitHub:** https://github.com/arjitmat/InvestIQ

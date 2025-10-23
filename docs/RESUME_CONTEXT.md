@@ -1,17 +1,17 @@
 # InvestIQ - Resume Context
 
 ## One-Line Description
-AI-enhanced investment research platform with React + TypeScript frontend and Python FastAPI backend, deployed on Vercel + Render
+AI-enhanced investment research platform with React + TypeScript frontend and Python FastAPI backend, deployed on HuggingFace Spaces with Docker (9 data sources, 7 AI insights)
 
 ## For Resume "Projects" Section
 
 ### Option 1: Concise (2-3 lines)
 **InvestIQ** - AI-Enhanced Investment Research Platform
-- Built full-stack app with React 18 + TypeScript frontend and Python FastAPI backend integrating 5 real-time data APIs
-- Implemented Google Gemini AI for cross-signal analysis and pattern recognition with smart caching (80% cost reduction)
-- Deployed production-ready application on Vercel + Render with CI/CD pipeline ($0 hosting cost)
-- **Tech:** React, TypeScript, Python, FastAPI, Gemini AI, Vercel, Render
-- **Live:** https://invest-iq-wheat.vercel.app
+- Built full-stack app with React 18 + TypeScript frontend and Python FastAPI backend integrating 9 real-time data sources (options, insider trading, institutional, risk metrics)
+- Implemented Google Gemini AI with 7 specialized insights (momentum, support/resistance, volume anomalies, cross-signal analysis) and smart caching (80% cost reduction)
+- Deployed production-ready application on HuggingFace Spaces using Docker multi-stage builds with CI/CD pipeline ($0 hosting cost)
+- **Tech:** React, TypeScript, Python, FastAPI, Gemini AI, Docker, HuggingFace
+- **Live:** https://huggingface.co/spaces/arjitmat/investiq
 
 ### Option 2: Detailed (4-5 lines)
 **InvestIQ** - Full-Stack AI Investment Research Platform
@@ -237,16 +237,18 @@ https://invest-iq-wheat.vercel.app
 
 ## Key Metrics for Discussions
 
-- **Lines of Code:** ~3,500+ (backend) + ~2,000+ (frontend)
-- **Development Time:** ~15-20 hours across 3 sessions
-- **APIs Integrated:** 5 (yfinance, NewsAPI, Reddit, Google Trends, Fear & Greed)
+- **Lines of Code:** ~4,500+ (backend) + ~2,500+ (frontend)
+- **Development Time:** ~25-30 hours across 4 sessions
+- **Data Sources Integrated:** 9 (yfinance price/options/insider/institutional/risk, NewsAPI, Reddit, Google Trends, Fear & Greed)
+- **AI Insights:** 7 specialized functions (expanded from 3)
 - **Performance Improvement:** 3x faster with async parallel fetching
-- **Cost Reduction:** 80% via smart caching
+- **Cost Reduction:** 80% via smart caching, $0 incremental cost for enhancements
 - **Hosting Cost:** $0/month
+- **Deployment:** Docker multi-stage build on HuggingFace Spaces
 - **Deployment Time:** <5 minutes (auto from GitHub)
-- **Assets Supported:** 25 (stocks, crypto, indices, commodities)
-- **AI Functions:** 3 (technical patterns, news sentiment, cross-signals)
+- **Assets Supported:** 30 (stocks, crypto, indices, commodities)
 - **Confidence Levels:** 4 (HIGH, MEDIUM, LOW, CONTEXT)
+- **Report Sections:** 9 (metadata, technical, risk, options, institutional, insider, sentiment, news, AI insights)
 
 ## Tags for Job Applications
 
