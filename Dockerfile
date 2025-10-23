@@ -44,10 +44,12 @@ EXPOSE 7860
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PORT=7860
+ENV PYTHONPATH=/app
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import requests; requests.get('http://localhost:7860/health')"
 
-# Run the application
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "7860"]
+# Change to backend directory and run the application
+WORKDIR /app/backend
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"]
