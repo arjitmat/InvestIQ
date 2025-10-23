@@ -13,6 +13,9 @@ RUN npm ci
 # Copy frontend source code
 COPY frontend-react/ ./
 
+# Set environment variable for Vite build (empty = relative paths)
+ENV VITE_API_URL=
+
 # Build the React app (creates /app/frontend/dist)
 RUN npm run build
 
