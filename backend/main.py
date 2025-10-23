@@ -5,10 +5,14 @@ Main application coordinating all data collection and analysis
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import logging
 from typing import Optional
 import asyncio
+import os
+from pathlib import Path
 
 # Import data collectors
 from data_sources.yfinance_api import get_price_data
@@ -285,6 +289,28 @@ async def internal_error_handler(request, exc):
         "detail": "An unexpected error occurred. Please try again later."
     }
 
+# Mount static files and serve React frontend
+# Check if frontend build exists
+frontend_path = Path(__file__).parent.parent / "frontend" / "dist"
+if frontend_path.exists():
+    # Mount static assets (JS, CSS, images)
+    app.mount("/assets", StaticFiles(directory=str(frontend_path / "assets")), name="assets")
+
+    # Catch-all route to serve index.html for React Router
+    @app.get("/{full_path:path}")
+    async def serve_frontend(full_path: str):
+        """Serve React frontend for all non-API routes"""
+        # If requesting a file with extension, try to serve it
+        if "." in full_path.split("/")[-1]:
+            file_path = frontend_path / full_path
+            if file_path.exists():
+                return FileResponse(file_path)
+
+        # Otherwise serve index.html (for React Router)
+        return FileResponse(frontend_path / "index.html")
+else:
+    logger.warning("Frontend build not found. API-only mode.")
+
 # Run the application
 if __name__ == "__main__":
     import uvicorn
@@ -292,10 +318,13 @@ if __name__ == "__main__":
     logger.info(f"Starting {APP_NAME} v{APP_VERSION}")
     logger.info("⚠️  EDUCATIONAL TOOL ONLY - NOT FINANCIAL ADVICE")
 
+    # Get port from environment variable (for HuggingFace/Docker deployment)
+    port = int(os.getenv("PORT", 8000))
+
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=8000,
-        reload=True,  # Auto-reload during development
+        port=port,
+        reload=False,  # Disable reload in production
         log_level="info"
     )

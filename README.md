@@ -1,14 +1,21 @@
+---
+title: InvestIQ
+emoji: 📊
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+license: mit
+---
+
 # InvestIQ - AI-Enhanced Investment Research Platform
 
 > An educational investment research tool that aggregates real-time market data, technical analysis, sentiment indicators, and AI-powered insights into comprehensive reports.
 
 ## 🌐 Live Demo
 
-**Frontend:** https://invest-iq-wheat.vercel.app
-**Backend API:** https://investiq-backend.onrender.com
+**HuggingFace Space:** [Coming Soon]
 **GitHub:** https://github.com/arjitmat/InvestIQ
-
-> **Note:** Backend is hosted on Render's free tier, which has a 15-minute inactivity sleep. First request after inactivity may take 30-45 seconds to wake up.
 
 ## ⚠️ Important Disclaimer
 
@@ -163,21 +170,15 @@ Frontend will run on http://localhost:5173
 
 ## 🚀 Deployment
 
-### Current Production Setup
+### Current Production Setup (HuggingFace Spaces)
 
-**Frontend (Vercel):**
-- Auto-deploys from `main` branch
-- Environment variables configured in Vercel dashboard
-- Instant cold starts, global CDN distribution
-- Free tier, serverless edge deployment
+**Full-Stack Docker Deployment:**
+- Frontend + Backend in single Docker container
+- No cold starts, always ready
+- Free tier with generous compute limits
+- Built-in secrets management
 
-**Backend (Render):**
-- Deployed via `render.yaml` (infrastructure as code)
-- Auto-deploys from `main` branch
-- Environment variables configured in Render dashboard
-- Free tier with 15-minute cold start after inactivity
-
-### Deployment Instructions
+### Deploy to HuggingFace Spaces
 
 **1. Fork/Clone Repository**
 ```bash
@@ -185,46 +186,58 @@ git clone https://github.com/arjitmat/InvestIQ.git
 cd InvestIQ
 ```
 
-**2. Deploy Frontend to Vercel**
-- Go to https://vercel.com/new
-- Import your GitHub repository
-- Set Root Directory: `frontend-react`
-- Add environment variable:
-  - `VITE_API_URL`: Your backend URL (e.g., `https://your-backend.onrender.com`)
-- Click Deploy
+**2. Create HuggingFace Space**
+- Go to https://huggingface.co/new-space
+- Select "Docker" as SDK
+- Name your space (e.g., "investiq")
+- Select visibility (Public or Private)
+- Create Space
 
-**3. Deploy Backend to Render**
-- Go to https://render.com/
-- Create new Blueprint instance
-- Connect your GitHub repository
-- Render will detect `render.yaml` and configure automatically
-- Add environment variables in Render dashboard:
-  - `NEWSAPI_KEY`
-  - `REDDIT_CLIENT_ID`
-  - `REDDIT_CLIENT_SECRET`
-  - `GEMINI_API_KEY`
-- Click Deploy
+**3. Add Environment Variables**
+Go to Space Settings → Variables and Secrets, add:
+- `NEWSAPI_KEY`: Your NewsAPI key
+- `REDDIT_CLIENT_ID`: Your Reddit client ID
+- `REDDIT_CLIENT_SECRET`: Your Reddit client secret
+- `GEMINI_API_KEY`: Your Gemini API key
 
-**4. Update Frontend Environment Variable**
-- In Vercel dashboard, update `VITE_API_URL` to point to your Render backend URL
-- Redeploy frontend
+**4. Push to HuggingFace**
+```bash
+# Install HuggingFace CLI
+pip install huggingface_hub
+
+# Login to HuggingFace
+huggingface-cli login
+
+# Push to your space (replace YOUR_USERNAME and YOUR_SPACE_NAME)
+git remote add hf https://huggingface.co/spaces/YOUR_USERNAME/YOUR_SPACE_NAME
+git add .
+git commit -m "Initial deployment to HuggingFace Spaces"
+git push hf main
+```
+
+**5. Access Your Space**
+Your app will be available at: `https://huggingface.co/spaces/YOUR_USERNAME/YOUR_SPACE_NAME`
 
 ### Alternative Deployment Options
 
-**Vercel (Full Stack - Not Recommended)**
-- Frontend works perfectly
-- Backend hits 50MB serverless function limit due to pandas/numpy dependencies
-- Better to use Render or similar for Python backend
+**Docker (Local or Cloud)**
+```bash
+# Build the image
+docker build -t investiq .
 
-**Railway**
-- Good alternative to Render
-- $5 free credit per month
-- No forced sleep after inactivity
-- Follow similar process as Render
+# Run with environment variables
+docker run -p 7860:7860 \
+  -e NEWSAPI_KEY=your_key \
+  -e REDDIT_CLIENT_ID=your_id \
+  -e REDDIT_CLIENT_SECRET=your_secret \
+  -e GEMINI_API_KEY=your_key \
+  investiq
+```
 
-**Docker**
-- Dockerfile and docker-compose.yml can be added for containerized deployment
-- Suitable for AWS, GCP, Azure deployments
+**Railway / Render**
+- Upload Dockerfile
+- Configure environment variables
+- Deploy (Railway: no cold starts, Render: 15-min cold starts on free tier)
 
 ## 📄 License
 

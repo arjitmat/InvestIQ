@@ -1,0 +1,70 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build artifacts
+frontend-react/dist/
+frontend-react/build/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation (excluded as per user request)
+.claude/
+docs/
+*.md
+!README.md
+resume/
+portfolio/
+build_plan/
+CLAUDE.md
+
+# Environment files (will be set in HF Spaces)
+.env
+.env.local
+.env.production
+
+# Testing
+test/
+tests/
+*.test.js
+*.spec.js
+coverage/
+
+# Old frontend (not needed)
+frontend/
+
+# Deployment configs (not needed in Docker)
+vercel.json
+render.yaml
+netlify.toml
+
+# Development files
+*.bak
+*.tmp
+temp/
