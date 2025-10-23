@@ -271,6 +271,15 @@ Consult licensed professionals for financial decisions.
         """.strip()
     }
 
+# Mount static files FIRST (before any routes that might conflict)
+frontend_path = Path(__file__).parent.parent / "frontend" / "dist"
+if frontend_path.exists():
+    # Mount static assets (JS, CSS, images) - this must be before catch-all
+    app.mount("/assets", StaticFiles(directory=str(frontend_path / "assets")), name="assets")
+    logger.info("Frontend assets mounted at /assets")
+else:
+    logger.warning("Frontend build not found. API-only mode.")
+
 # Error handlers
 
 @app.exception_handler(404)
@@ -289,27 +298,18 @@ async def internal_error_handler(request, exc):
         "detail": "An unexpected error occurred. Please try again later."
     }
 
-# Mount static files and serve React frontend
-# Check if frontend build exists
-frontend_path = Path(__file__).parent.parent / "frontend" / "dist"
+# Serve React frontend - MUST be defined AFTER all API routes
 if frontend_path.exists():
-    # Mount static assets (JS, CSS, images)
-    app.mount("/assets", StaticFiles(directory=str(frontend_path / "assets")), name="assets")
-
     # Serve index.html at root
     @app.get("/")
     async def serve_root():
         """Serve React frontend at root"""
         return FileResponse(frontend_path / "index.html")
 
-    # Catch-all route to serve index.html for React Router
+    # Catch-all route to serve index.html for React Router (defined LAST)
     @app.get("/{full_path:path}")
     async def serve_frontend(full_path: str):
         """Serve React frontend for all non-API routes"""
-        # Skip API routes
-        if full_path.startswith("api/"):
-            raise HTTPException(status_code=404, detail="API endpoint not found")
-
         # If requesting a file with extension, try to serve it
         if "." in full_path.split("/")[-1]:
             file_path = frontend_path / full_path
@@ -318,8 +318,6 @@ if frontend_path.exists():
 
         # Otherwise serve index.html (for React Router)
         return FileResponse(frontend_path / "index.html")
-else:
-    logger.warning("Frontend build not found. API-only mode.")
 
 # Run the application
 if __name__ == "__main__":
