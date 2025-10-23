@@ -1,4 +1,5 @@
 # Multi-stage Dockerfile for InvestIQ - HuggingFace Spaces Deployment
+# Updated: 2025-10-23 - Added advanced market data features
 # Stage 1: Build React Frontend
 FROM node:20-alpine AS frontend-builder
 
