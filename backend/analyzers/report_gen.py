@@ -22,7 +22,11 @@ def generate_report_data(
     technical_analysis: Optional[Dict[str, Any]],
     sentiment_analysis: Dict[str, Any],
     news_data: Optional[list],
-    ai_insights: Optional[Dict[str, Any]] = None
+    ai_insights: Optional[Dict[str, Any]] = None,
+    risk_data: Optional[Dict[str, Any]] = None,
+    options_data: Optional[Dict[str, Any]] = None,
+    insider_data: Optional[Dict[str, Any]] = None,
+    institutional_data: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """
     Generate complete structured report from all analysis components
@@ -34,6 +38,10 @@ def generate_report_data(
         sentiment_analysis: Aggregated sentiment
         news_data: News headlines
         ai_insights: AI-generated insights (optional)
+        risk_data: Risk metrics (volatility, beta, etc.)
+        options_data: Options sentiment (put/call ratio)
+        insider_data: Insider trading activity
+        institutional_data: Institutional ownership
 
     Returns:
         dict: Complete report data ready for frontend/PDF
@@ -45,10 +53,14 @@ def generate_report_data(
         report = {
             "metadata": _build_metadata(ticker, price_data),
             "technical_analysis": _format_technical(technical_analysis),
+            "risk_metrics": _format_risk(risk_data),
+            "options_sentiment": _format_options(options_data),
+            "institutional_ownership": _format_institutional(institutional_data),
+            "insider_trading": _format_insider(insider_data),
             "sentiment_analysis": _format_sentiment(sentiment_analysis),
             "news_headlines": _format_news(news_data),
             "ai_insights": _format_ai_insights(ai_insights),
-            "summary": _generate_summary(ticker, price_data, technical_analysis, sentiment_analysis),
+            "summary": _generate_summary(ticker, price_data, technical_analysis, sentiment_analysis, risk_data),
             "disclaimer": _get_disclaimer(),
             "generated_at": datetime.now().isoformat(),
             "app_info": {
@@ -158,16 +170,102 @@ def _format_ai_insights(ai_insights: Optional[Dict[str, Any]]) -> Dict[str, Any]
         "confidence": ai_insights.get('confidence', 'AI-GENERATED'),
         "status": "available",
         "technical_insight": ai_insights.get('technical_insight'),
+        "price_momentum_insight": ai_insights.get('price_momentum_insight'),
+        "support_resistance_insight": ai_insights.get('support_resistance_insight'),
+        "volume_anomaly_insight": ai_insights.get('volume_anomaly_insight'),
         "news_sentiment": ai_insights.get('news_sentiment'),
         "cross_signal_analysis": ai_insights.get('cross_signal_analysis'),
+        "risk_assessment_insight": ai_insights.get('risk_assessment_insight'),
         "disclaimer": ai_insights.get('disclaimer', 'AI-generated insights for educational purposes only.')
+    }
+
+def _format_risk(risk_data: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    """Format risk metrics section"""
+    if not risk_data:
+        return {
+            "confidence": "UNAVAILABLE",
+            "status": "unavailable",
+            "note": "Risk metrics data not available for this asset"
+        }
+
+    return {
+        "confidence": risk_data.get('confidence', 'HIGH'),
+        "status": "available",
+        "volatility_30d": risk_data.get('volatility_30d'),
+        "volatility_90d": risk_data.get('volatility_90d'),
+        "beta": risk_data.get('beta'),
+        "high_52w": risk_data.get('high_52w'),
+        "low_52w": risk_data.get('low_52w'),
+        "pct_from_high": risk_data.get('pct_from_high'),
+        "pct_from_low": risk_data.get('pct_from_low'),
+        "risk_score": risk_data.get('risk_score'),
+        "risk_level": risk_data.get('risk_level')
+    }
+
+def _format_options(options_data: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    """Format options sentiment section"""
+    if not options_data:
+        return {
+            "confidence": "UNAVAILABLE",
+            "status": "unavailable",
+            "note": "Options data not available for this asset (may not have listed options)"
+        }
+
+    return {
+        "confidence": options_data.get('confidence', 'MEDIUM'),
+        "status": "available",
+        "put_call_ratio": options_data.get('put_call_ratio'),
+        "sentiment": options_data.get('sentiment'),
+        "interpretation": options_data.get('interpretation'),
+        "call_volume": options_data.get('call_volume'),
+        "put_volume": options_data.get('put_volume'),
+        "expiration": options_data.get('expiration')
+    }
+
+def _format_institutional(institutional_data: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    """Format institutional ownership section"""
+    if not institutional_data:
+        return {
+            "confidence": "UNAVAILABLE",
+            "status": "unavailable",
+            "note": "Institutional ownership data not available for this asset"
+        }
+
+    return {
+        "confidence": institutional_data.get('confidence', 'MEDIUM'),
+        "status": "available",
+        "total_institutional_shares": institutional_data.get('total_institutional_shares'),
+        "top_holders": institutional_data.get('top_holders', []),
+        "holder_count": institutional_data.get('holder_count')
+    }
+
+def _format_insider(insider_data: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    """Format insider trading section"""
+    if not insider_data:
+        return {
+            "confidence": "UNAVAILABLE",
+            "status": "unavailable",
+            "note": "Insider trading data not available for this asset"
+        }
+
+    return {
+        "confidence": insider_data.get('confidence', 'MEDIUM'),
+        "status": "available",
+        "buy_transactions": insider_data.get('buy_transactions'),
+        "sell_transactions": insider_data.get('sell_transactions'),
+        "buy_value": insider_data.get('buy_value'),
+        "sell_value": insider_data.get('sell_value'),
+        "sentiment": insider_data.get('sentiment'),
+        "interpretation": insider_data.get('interpretation'),
+        "note": insider_data.get('note', '')
     }
 
 def _generate_summary(
     ticker: str,
     price_data: Dict[str, Any],
     technical: Optional[Dict[str, Any]],
-    sentiment: Dict[str, Any]
+    sentiment: Dict[str, Any],
+    risk_data: Optional[Dict[str, Any]] = None
 ) -> str:
     """
     Generate executive summary paragraph
@@ -197,6 +295,14 @@ def _generate_summary(
             f"Technical indicators show {overall_signal} with RSI at {rsi_value:.1f}."
         )
 
+    # Risk summary
+    if risk_data:
+        risk_level = risk_data.get('risk_level', 'Unknown')
+        volatility = risk_data.get('volatility_30d', 0)
+        parts.append(
+            f"Risk assessment: {risk_level} ({volatility:.1f}% annualized volatility)."
+        )
+
     # Sentiment summary
     overall_sentiment = sentiment.get('overall_sentiment', {})
     if overall_sentiment and 'assessment' in overall_sentiment:
@@ -207,7 +313,7 @@ def _generate_summary(
 
     # Caveat
     parts.append(
-        "This analysis combines technical indicators with public sentiment data for research purposes only."
+        "This analysis combines technical indicators, risk metrics, and public sentiment data for research purposes only."
     )
 
     return " ".join(parts)

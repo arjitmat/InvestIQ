@@ -329,15 +329,143 @@ Requirements:
         return None
 
 
+def generate_price_momentum_insight(
+    ticker: str,
+    price_data: Dict[str, Any],
+    technical_data: Dict[str, Any]
+) -> Optional[str]:
+    """Generate insight about price momentum and trend strength"""
+    cache_key = generate_cache_key(ticker, "ai_momentum", price_data)
+    cached = get_cached(cache_key)
+    if cached:
+        return cached
+
+    try:
+        price_change = price_data.get('price_change_percent', 0)
+        rsi = technical_data.get('rsi', {}).get('value', 50)
+        volume_status = technical_data.get('volume', {}).get('status', 'average')
+
+        prompt = f"""Analyze price momentum for {ticker}:
+- Price change: {price_change:+.2f}%
+- RSI: {rsi}
+- Volume: {volume_status}
+
+Provide ONE specific momentum insight (max 15 words). Focus on trend strength, exhaustion signals, or momentum divergences. Use "suggests" not "will". Return null if nothing notable."""
+
+        response = _call_gemini(prompt, temperature=0.2)
+        if response and response.lower() not in ['null', 'none']:
+            set_cache(cache_key, response, ttl_minutes=AI_CACHE_TTL_MINUTES)
+            return response
+        return None
+    except:
+        return None
+
+def generate_support_resistance_insight(
+    ticker: str,
+    price_data: Dict[str, Any],
+    technical_data: Dict[str, Any]
+) -> Optional[str]:
+    """Generate insight about support/resistance levels"""
+    cache_key = generate_cache_key(ticker, "ai_levels", price_data)
+    cached = get_cached(cache_key)
+    if cached:
+        return cached
+
+    try:
+        current = price_data.get('current_price', 0)
+        ma_values = technical_data.get('moving_averages', {}).get('values', {})
+
+        prompt = f"""Identify support/resistance for {ticker}:
+- Current: ${current}
+- MA20: {ma_values.get('MA_20', 'N/A')}
+- MA50: {ma_values.get('MA_50', 'N/A')}
+
+Provide ONE specific insight about key levels (max 15 words). Focus on nearby support/resistance or breakout levels. Educational tone. Return null if nothing notable."""
+
+        response = _call_gemini(prompt, temperature=0.2)
+        if response and response.lower() not in ['null', 'none']:
+            set_cache(cache_key, response, ttl_minutes=AI_CACHE_TTL_MINUTES)
+            return response
+        return None
+    except:
+        return None
+
+def generate_volume_anomaly_insight(
+    ticker: str,
+    technical_data: Dict[str, Any]
+) -> Optional[str]:
+    """Generate insight about volume anomalies"""
+    cache_key = generate_cache_key(ticker, "ai_volume", technical_data)
+    cached = get_cached(cache_key)
+    if cached:
+        return cached
+
+    try:
+        volume = technical_data.get('volume', {})
+        status = volume.get('status', 'average')
+        vs_avg_pct = volume.get('vs_average_pct', 0)
+
+        prompt = f"""Analyze volume for {ticker}:
+- Status: {status}
+- vs Average: {vs_avg_pct:+.1f}%
+
+Provide ONE specific insight about volume (max 15 words). Focus on unusual patterns, conviction signals, or liquidity concerns. Return null if nothing notable."""
+
+        response = _call_gemini(prompt, temperature=0.2)
+        if response and response.lower() not in ['null', 'none']:
+            set_cache(cache_key, response, ttl_minutes=AI_CACHE_TTL_MINUTES)
+            return response
+        return None
+    except:
+        return None
+
+def generate_risk_assessment_insight(
+    ticker: str,
+    risk_data: Optional[Dict[str, Any]],
+    options_data: Optional[Dict[str, Any]]
+) -> Optional[str]:
+    """Generate insight about risk factors"""
+    if not risk_data and not options_data:
+        return None
+
+    cache_key = generate_cache_key(ticker, "ai_risk", {**({'risk': risk_data} if risk_data else {}), **({'options': options_data} if options_data else {})})
+    cached = get_cached(cache_key)
+    if cached:
+        return cached
+
+    try:
+        risk_level = risk_data.get('risk_level', 'N/A') if risk_data else 'N/A'
+        volatility = risk_data.get('volatility_30d', 'N/A') if risk_data else 'N/A'
+        put_call = options_data.get('put_call_ratio', 'N/A') if options_data else 'N/A'
+
+        prompt = f"""Assess risk for {ticker}:
+- Risk Level: {risk_level}
+- 30d Volatility: {volatility}%
+- Put/Call Ratio: {put_call}
+
+Provide ONE specific risk insight (max 15 words). Focus on notable risk factors or hedging activity. Educational tone. Return null if nothing notable."""
+
+        response = _call_gemini(prompt, temperature=0.2)
+        if response and response.lower() not in ['null', 'none']:
+            set_cache(cache_key, response, ttl_minutes=AI_CACHE_TTL_MINUTES)
+            return response
+        return None
+    except:
+        return None
+
 async def generate_ai_insights(
     ticker: str,
     price_data: Dict[str, Any],
     technical_data: Optional[Dict[str, Any]],
     sentiment_data: Dict[str, Any],
-    news_data: Optional[List[Dict[str, Any]]]
+    news_data: Optional[List[Dict[str, Any]]],
+    risk_data: Optional[Dict[str, Any]] = None,
+    options_data: Optional[Dict[str, Any]] = None,
+    insider_data: Optional[Dict[str, Any]] = None,
+    institutional_data: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """
-    Generate all AI insights for the report
+    Generate all AI insights for the report (expanded to 6-7 insights)
 
     Args:
         ticker: Ticker symbol
@@ -345,38 +473,46 @@ async def generate_ai_insights(
         technical_data: Technical analysis
         sentiment_data: Sentiment analysis
         news_data: News headlines
+        risk_data: Risk metrics (new)
+        options_data: Options sentiment (new)
+        insider_data: Insider trading (new)
+        institutional_data: Institutional ownership (new)
 
     Returns:
         dict: AI insights with all components
     """
     try:
-        logger.info(f"Generating AI insights for {ticker}...")
+        logger.info(f"Generating enhanced AI insights for {ticker}...")
 
         result = {
             "confidence": CONFIDENCE_AI,
             "disclaimer": "AI-generated insights for educational purposes only. Not financial advice.",
             "technical_insight": None,
             "news_sentiment": None,
-            "cross_signal_analysis": None
+            "cross_signal_analysis": None,
+            "price_momentum_insight": None,
+            "support_resistance_insight": None,
+            "volume_anomaly_insight": None,
+            "risk_assessment_insight": None
         }
 
-        # Generate technical insight (if technical data available)
+        # Generate all insights (existing + new)
         if technical_data:
-            result["technical_insight"] = generate_technical_insight(
-                ticker, technical_data, price_data
-            )
+            result["technical_insight"] = generate_technical_insight(ticker, technical_data, price_data)
+            result["price_momentum_insight"] = generate_price_momentum_insight(ticker, price_data, technical_data)
+            result["support_resistance_insight"] = generate_support_resistance_insight(ticker, price_data, technical_data)
+            result["volume_anomaly_insight"] = generate_volume_anomaly_insight(ticker, technical_data)
 
-        # Generate news sentiment (if news available)
         if news_data and len(news_data) > 0:
             result["news_sentiment"] = generate_news_sentiment(ticker, news_data)
 
-        # Generate cross-signal analysis (always try)
         if technical_data:
-            result["cross_signal_analysis"] = generate_cross_signal_analysis(
-                ticker, technical_data, sentiment_data, price_data
-            )
+            result["cross_signal_analysis"] = generate_cross_signal_analysis(ticker, technical_data, sentiment_data, price_data)
 
-        logger.info(f"AI insights generated for {ticker}")
+        # New risk assessment insight
+        result["risk_assessment_insight"] = generate_risk_assessment_insight(ticker, risk_data, options_data)
+
+        logger.info(f"Enhanced AI insights generated for {ticker}")
         return result
 
     except Exception as e:

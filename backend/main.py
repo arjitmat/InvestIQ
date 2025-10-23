@@ -15,7 +15,13 @@ import os
 from pathlib import Path
 
 # Import data collectors
-from data_sources.yfinance_api import get_price_data
+from data_sources.yfinance_api import (
+    get_price_data,
+    get_options_sentiment,
+    get_institutional_ownership,
+    get_risk_metrics,
+    get_insider_trading
+)
 from data_sources.news_api import get_headlines_for_ticker
 from data_sources.reddit_api import get_mention_volume
 from data_sources.google_trends import get_search_interest
@@ -167,6 +173,36 @@ async def analyze_asset(request: AnalyzeRequest):
             logger.warning(f"Fear & Greed data collection failed: {fear_greed_data}")
             fear_greed_data = None
 
+        # Step 2b: Collect advanced market data (options, risk, institutional, insider)
+        logger.info(f"Collecting advanced market data for {ticker}...")
+
+        options_task = asyncio.to_thread(get_options_sentiment, ticker)
+        risk_task = asyncio.to_thread(get_risk_metrics, ticker)
+        institutional_task = asyncio.to_thread(get_institutional_ownership, ticker)
+        insider_task = asyncio.to_thread(get_insider_trading, ticker)
+
+        options_data, risk_data, institutional_data, insider_data = await asyncio.gather(
+            options_task,
+            risk_task,
+            institutional_task,
+            insider_task,
+            return_exceptions=True
+        )
+
+        # Handle exceptions from parallel tasks
+        if isinstance(options_data, Exception):
+            logger.warning(f"Options data collection failed: {options_data}")
+            options_data = None
+        if isinstance(risk_data, Exception):
+            logger.warning(f"Risk data collection failed: {risk_data}")
+            risk_data = None
+        if isinstance(institutional_data, Exception):
+            logger.warning(f"Institutional data collection failed: {institutional_data}")
+            institutional_data = None
+        if isinstance(insider_data, Exception):
+            logger.warning(f"Insider data collection failed: {insider_data}")
+            insider_data = None
+
         # Step 3: Perform technical analysis
         logger.info(f"Performing technical analysis for {ticker}...")
         technical_analysis = analyze_technical(price_data)
@@ -189,7 +225,11 @@ async def analyze_asset(request: AnalyzeRequest):
                 price_data,
                 technical_analysis,
                 sentiment_analysis,
-                news_data
+                news_data,
+                risk_data,
+                options_data,
+                insider_data,
+                institutional_data
             )
             logger.info(f"AI insights generated for {ticker}")
         except Exception as ai_error:
@@ -204,7 +244,11 @@ async def analyze_asset(request: AnalyzeRequest):
             technical_analysis,
             sentiment_analysis,
             news_data,
-            ai_insights
+            ai_insights,
+            risk_data,
+            options_data,
+            insider_data,
+            institutional_data
         )
 
         logger.info(f"Analysis complete for {ticker}")

@@ -47,6 +47,10 @@ export default function ReportPage() {
   const { report } = reportData;
   const metadata = report.metadata;
   const technical = report.technical_analysis;
+  const risk = report.risk_metrics;
+  const options = report.options_sentiment;
+  const institutional = report.institutional_ownership;
+  const insider = report.insider_trading;
   const sentiment = report.sentiment_analysis;
   const news = report.news_headlines;
   const aiInsights = report.ai_insights;
@@ -176,6 +180,97 @@ export default function ReportPage() {
             )}
           </div>
 
+          {/* Risk Metrics Card */}
+          {risk && risk.status === 'available' && (
+            <div className={`p-6 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl ${
+              isDark ? 'bg-[#1a2f54]/80' : 'bg-white'
+            }`}>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>
+                  Risk Metrics
+                </h2>
+                <span className="px-3 py-1 bg-green-500 text-white text-sm font-medium rounded-full">
+                  HIGH Confidence
+                </span>
+              </div>
+
+              {/* Risk Level Badge */}
+              <div className="mb-6 text-center">
+                <div className={`inline-block px-6 py-3 rounded-lg text-lg font-bold ${
+                  risk.risk_level === 'Low' ? 'bg-green-500/20 text-green-500 border border-green-500/50' :
+                  risk.risk_level === 'Moderate' ? 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/50' :
+                  'bg-red-500/20 text-red-500 border border-red-500/50'
+                }`}>
+                  {risk.risk_level} Risk ({risk.risk_score}/100)
+                </div>
+              </div>
+
+              {/* Volatility */}
+              <div className="space-y-4 mb-6">
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>30-Day Volatility</span>
+                    <span className={`font-medium ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>
+                      {risk.volatility_30d?.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>90-Day Volatility</span>
+                    <span className={`font-medium ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>
+                      {risk.volatility_90d?.toFixed(1)}%
+                    </span>
+                  </div>
+                </div>
+
+                {/* Beta */}
+                {risk.beta && (
+                  <div className="flex justify-between">
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Beta (Market Correlation)</span>
+                    <span className={`font-medium ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>
+                      {risk.beta.toFixed(2)}
+                    </span>
+                  </div>
+                )}
+
+                {/* 52-Week Range */}
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-[#2D3748]' : 'bg-gray-100'}`}>
+                  <div className="text-sm mb-2">
+                    <span className={`font-medium ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>52-Week Range</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+                      Low: ${risk.low_52w?.toFixed(2)}
+                    </span>
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+                      High: ${risk.high_52w?.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="mt-2 text-xs text-center">
+                    <span className={`${risk.pct_from_high < -20 ? 'text-red-500' : isDark ? 'text-gray-500' : 'text-gray-500'}`}>
+                      {risk.pct_from_high?.toFixed(1)}% from 52W high
+                    </span>
+                    <span className="mx-2">•</span>
+                    <span className={`${risk.pct_from_low > 50 ? 'text-green-500' : isDark ? 'text-gray-500' : 'text-gray-500'}`}>
+                      +{risk.pct_from_low?.toFixed(1)}% from 52W low
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Risk Assessment Insight */}
+              {aiInsights?.status === 'available' && aiInsights.risk_assessment_insight && (
+                <div className="mt-4 p-3 rounded-lg bg-purple-500/10 border border-purple-500/30">
+                  <div className="flex items-start gap-2">
+                    <span className="px-2 py-1 bg-purple-500 text-white text-xs font-medium rounded">AI</span>
+                    <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {aiInsights.risk_assessment_insight}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Sentiment Analysis Card */}
           <div className={`p-6 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl ${
             isDark ? 'bg-[#1a2f54]/80' : 'bg-white'
@@ -236,6 +331,153 @@ export default function ReportPage() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Advanced Market Data - Second Row Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          {/* Options Sentiment Card */}
+          {options && options.status === 'available' && (
+            <div className={`p-6 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl ${
+              isDark ? 'bg-[#1a2f54]/80' : 'bg-white'
+            }`}>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>
+                  Options Market
+                </h2>
+                <span className="px-2 py-1 bg-yellow-500 text-white text-xs font-medium rounded-full">
+                  MEDIUM
+                </span>
+              </div>
+
+              {/* Put/Call Ratio */}
+              <div className="text-center mb-4">
+                <div className={`inline-block px-4 py-2 rounded-lg ${
+                  options.sentiment === 'bullish' ? 'bg-green-500/20 text-green-500' :
+                  options.sentiment === 'bearish' ? 'bg-red-500/20 text-red-500' :
+                  'bg-gray-500/20 text-gray-500'
+                }`}>
+                  <div className="text-2xl font-bold">{options.put_call_ratio}</div>
+                  <div className="text-xs">Put/Call Ratio</div>
+                </div>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                <div className="flex justify-between text-sm">
+                  <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Call Volume</span>
+                  <span className={`font-medium ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>
+                    {options.call_volume?.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Put Volume</span>
+                  <span className={`font-medium ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>
+                    {options.put_volume?.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+
+              <div className={`p-2 rounded text-xs ${isDark ? 'bg-[#2D3748]' : 'bg-gray-100'} ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                {options.interpretation}
+              </div>
+            </div>
+          )}
+
+          {/* Insider Trading Card */}
+          {insider && insider.status === 'available' && (
+            <div className={`p-6 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl ${
+              isDark ? 'bg-[#1a2f54]/80' : 'bg-white'
+            }`}>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>
+                  Insider Activity
+                </h2>
+                <span className="px-2 py-1 bg-yellow-500 text-white text-xs font-medium rounded-full">
+                  MEDIUM
+                </span>
+              </div>
+
+              {/* Sentiment Badge */}
+              <div className="text-center mb-4">
+                <div className={`inline-block px-4 py-2 rounded-lg text-sm font-bold ${
+                  insider.sentiment === 'bullish' ? 'bg-green-500/20 text-green-500' :
+                  insider.sentiment === 'bearish' ? 'bg-red-500/20 text-red-500' :
+                  'bg-gray-500/20 text-gray-500'
+                }`}>
+                  {insider.sentiment.toUpperCase()}
+                </div>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                <div className="flex justify-between text-sm">
+                  <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Buy Transactions</span>
+                  <span className={`font-medium text-green-500`}>
+                    {insider.buy_transactions}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Sell Transactions</span>
+                  <span className={`font-medium text-red-500`}>
+                    {insider.sell_transactions}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Net Activity</span>
+                  <span className={`font-medium ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>
+                    ${((insider.buy_value - insider.sell_value) / 1000000).toFixed(1)}M
+                  </span>
+                </div>
+              </div>
+
+              <div className={`p-2 rounded text-xs ${isDark ? 'bg-[#2D3748]' : 'bg-gray-100'} ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                {insider.interpretation}
+              </div>
+            </div>
+          )}
+
+          {/* Institutional Ownership Card */}
+          {institutional && institutional.status === 'available' && (
+            <div className={`p-6 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl ${
+              isDark ? 'bg-[#1a2f54]/80' : 'bg-white'
+            }`}>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>
+                  Institutional
+                </h2>
+                <span className="px-2 py-1 bg-yellow-500 text-white text-xs font-medium rounded-full">
+                  MEDIUM
+                </span>
+              </div>
+
+              <div className="mb-4">
+                <div className="text-xs text-center mb-2">
+                  <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Total Holders</span>
+                </div>
+                <div className="text-2xl font-bold text-center">
+                  <span className={isDark ? 'text-white' : 'text-[#0A1F44]'}>
+                    {institutional.holder_count}
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="text-xs font-medium mb-1">
+                  <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Top 5 Holders:</span>
+                </div>
+                {institutional.top_holders?.slice(0, 5).map((holder: any, index: number) => (
+                  <div key={index} className={`text-xs p-2 rounded ${isDark ? 'bg-[#2D3748]' : 'bg-gray-100'}`}>
+                    <div className="flex justify-between mb-1">
+                      <span className={`font-medium truncate ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>
+                        {holder.Holder.length > 20 ? holder.Holder.substring(0, 20) + '...' : holder.Holder}
+                      </span>
+                      <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {holder['% Out']}%
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* News Context Card */}
@@ -302,28 +544,112 @@ export default function ReportPage() {
           </div>
         )}
 
-        {/* AI Cross-Signal Analysis */}
-        {aiInsights?.status === 'available' && aiInsights.cross_signal_analysis && aiInsights.cross_signal_analysis.length > 0 && (
+        {/* AI-Powered Insights Section */}
+        {aiInsights?.status === 'available' && (
           <div className="p-6 rounded-2xl shadow-lg mb-6 bg-gradient-to-br from-purple-500/10 to-cyan-500/10 border border-purple-500/20">
             <div className="flex justify-between items-center mb-4">
               <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>
-                AI Cross-Signal Analysis
+                AI-Powered Insights
               </h2>
               <span className="px-3 py-1 bg-purple-500 text-white text-sm font-medium rounded-full">
-                AI-POWERED
+                7 AI INSIGHTS
               </span>
             </div>
-            <div className="space-y-2">
-              {aiInsights.cross_signal_analysis.map((insight: string, index: number) => (
-                <div key={index} className={`flex items-start gap-2 p-3 rounded-lg ${
-                  isDark ? 'bg-white/5' : 'bg-white/50'
-                } border border-purple-500/20`}>
-                  <span className="text-purple-500 font-bold">{index + 1}.</span>
-                  <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                    {insight}
-                  </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Price Momentum Insight */}
+              {aiInsights.price_momentum_insight && (
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-white/5' : 'bg-white/50'} border border-purple-500/20`}>
+                  <div className="flex items-start gap-2">
+                    <span className="text-purple-500 font-bold">1.</span>
+                    <div>
+                      <h3 className={`text-sm font-semibold mb-1 ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>
+                        Price Momentum
+                      </h3>
+                      <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {aiInsights.price_momentum_insight}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              ))}
+              )}
+
+              {/* Support/Resistance Insight */}
+              {aiInsights.support_resistance_insight && (
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-white/5' : 'bg-white/50'} border border-purple-500/20`}>
+                  <div className="flex items-start gap-2">
+                    <span className="text-purple-500 font-bold">2.</span>
+                    <div>
+                      <h3 className={`text-sm font-semibold mb-1 ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>
+                        Key Levels
+                      </h3>
+                      <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {aiInsights.support_resistance_insight}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Volume Anomaly Insight */}
+              {aiInsights.volume_anomaly_insight && (
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-white/5' : 'bg-white/50'} border border-purple-500/20`}>
+                  <div className="flex items-start gap-2">
+                    <span className="text-purple-500 font-bold">3.</span>
+                    <div>
+                      <h3 className={`text-sm font-semibold mb-1 ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>
+                        Volume Analysis
+                      </h3>
+                      <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {aiInsights.volume_anomaly_insight}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Technical Patterns */}
+              {aiInsights.technical_insight && (
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-white/5' : 'bg-white/50'} border border-purple-500/20`}>
+                  <div className="flex items-start gap-2">
+                    <span className="text-purple-500 font-bold">4.</span>
+                    <div>
+                      <h3 className={`text-sm font-semibold mb-1 ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>
+                        Technical Patterns
+                      </h3>
+                      <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {aiInsights.technical_insight}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Cross-Signal Analysis - Full Width */}
+            {aiInsights.cross_signal_analysis && aiInsights.cross_signal_analysis.length > 0 && (
+              <div className="mt-4">
+                <h3 className={`text-sm font-semibold mb-3 ${isDark ? 'text-white' : 'text-[#0A1F44]'}`}>
+                  Cross-Signal Analysis (Multi-Source Validation):
+                </h3>
+                <div className="space-y-2">
+                  {aiInsights.cross_signal_analysis.map((insight: string, index: number) => (
+                    <div key={index} className={`flex items-start gap-2 p-3 rounded-lg ${
+                      isDark ? 'bg-white/5' : 'bg-white/50'
+                    } border border-purple-500/20`}>
+                      <span className="text-purple-500 font-bold">{index + 5}.</span>
+                      <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {insight}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Disclaimer */}
+            <div className={`mt-4 p-3 rounded-lg text-xs ${isDark ? 'bg-white/5' : 'bg-white/30'} ${isDark ? 'text-gray-500' : 'text-gray-600'}`}>
+              AI insights generated by Google Gemini 2.0 Flash for pattern recognition and educational purposes only. Not financial advice.
             </div>
           </div>
         )}
